@@ -1,8 +1,12 @@
 import Fastify from 'fastify'
 import cron from 'node-cron'
+import dotenv from 'dotenv'
 
-const cronF =  '*/10 * * * * *'
-const timeout = 30_000
+dotenv.config()
+
+const timeout = process.env.MAX_TIMEOUT
+const port = process.env.PORT
+const cronF =  '*/20 * * * * *'
 
 const fastify = Fastify()
 
@@ -47,10 +51,10 @@ cron.schedule(cronF, async () => {
   }
 })
 
-fastify.listen({ port: 3000 }, err => {
+fastify.listen({ port }, err => {
   if (err) {
     console.error(err)
     process.exit(1)
   }
-  console.log('Fastify proxy manager listening on port 3000')
+  console.log(`Listening! port: ${port}`)
 })
