@@ -4,10 +4,10 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+const cronTimeout = process.env.CRON_TIMEOUT || 5
 const timeout = process.env.MAX_PROVIDER_TIMEOUT
 const port = process.env.PORT || 3000
 const host = process.env.HOST || '127.0.0.1'
-const cronF =  '*/5 * * * * *' || 30000
 
 const fastify = Fastify({
   logger: true,
@@ -40,7 +40,7 @@ fastify.get('/', async (_, reply) => {
   reply.send({ ip: providers[0].ip })
 })
 
-cron.schedule(cronF, async () => {
+cron.schedule(`*/${cronTimeout} * * * * *`, async () => {
   const now = Date.now()
 
   if (now - providers[0].lastSeen > timeout) {
