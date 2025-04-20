@@ -9,7 +9,10 @@ const port = process.env.PORT || 3000
 const host = process.env.HOST || '127.0.0.1'
 const cronF =  '*/5 * * * * *' || 30000
 
-const fastify = Fastify()
+const fastify = Fastify({
+  logger: true,
+  trustProxy: true
+})
 
 let providers = []
 
