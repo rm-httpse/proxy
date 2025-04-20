@@ -6,7 +6,7 @@ dotenv.config()
 
 const timeout = process.env.MAX_PROVIDER_TIMEOUT
 const port = process.env.PORT || 3000
-const ip = process.env.IP || '127.0.0.1'
+const host = process.env.HOST || '127.0.0.1'
 const cronF =  '*/5 * * * * *' || 30000
 
 const fastify = Fastify()
@@ -50,10 +50,10 @@ cron.schedule(cronF, async () => {
   }
 })
 
-fastify.listen({ port, ip }, err => {
+fastify.listen({ port, host }, err => {
   if (err) {
     console.error(err)
     process.exit(1)
   }
-  console.log(`Listening! on port: ${port}, ip: ${ip}`)
+  console.log(`Listening! on port: ${port}, ip: ${host}`)
 })
