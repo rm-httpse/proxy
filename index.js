@@ -4,9 +4,9 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const timeout = process.env.MAX_TIMEOUT
+const timeout = process.env.MAX_PROVIDER_TIMEOUT
 const port = process.env.PORT
-const cronF =  '*/20 * * * * *'
+const cronF =  '*/5 * * * * *'
 
 const fastify = Fastify()
 
@@ -16,6 +16,8 @@ fastify.post('/', async (request, reply) => {
   const ip = request.ip
   const existing = providers.find(p => p.ip === ip)
   const now = Date.now()
+
+  console.log({ ip, lastSeen: now })
 
   if (existing) {
     existing.lastSeen = now
@@ -35,19 +37,15 @@ fastify.get('/', async (_, reply) => {
 })
 
 cron.schedule(cronF, async () => {
-  console.log(`providers:`)
-  providers.forEach(p => {
-    console.log('starts')
-    Object.keys(p).forEach(v => console.log(p[v]))
-  })
   const now = Date.now()
-  const before = providers.length
-  providers = providers.filter(p => now - p.lastSeen < timeout)
 
-  const after = providers.length
-  if (before !== after) {
-    console.log(`Removed ${before - after} inactive providers`)
-    // missing
+  if (now - providers[0].lastSeen > timeout) {
+    providers = providers.filter(p => now - p.lastSeen < timeout)
+    if (providers && providers[0]) {
+      // avisar cambio de provider
+    } else {
+      // avisar que no hay providers
+    }
   }
 })
 
@@ -56,5 +54,5 @@ fastify.listen({ port }, err => {
     console.error(err)
     process.exit(1)
   }
-  console.log(`Listening! port: ${port}`)
+  console.log(`Listening! on port: ${port}`)
 })
